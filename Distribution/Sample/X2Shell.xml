@@ -1,0 +1,396 @@
+<Sample>
+	<Data id="some-data">
+		<!-- Note: All data blocks found that pass the xpath test (if one is given) will be copied to the datacloud -->
+		<!-- You can use this to store any supporting information (i.e. a node list of services to manage). -->
+	</Data>
+
+	<!-- This is only used during the default run of the app, so we will use a test attribute -->
+	<!-- the name of the application is always the first argument.  if it is the only argument, then we are in "default" use.  -->
+	<Data id="AppTemplate" test="count(/X2Shell/run-time/command-line/arguments/arg) = 1">
+		<MyAppRoot>
+			<Data id="my-app-data"/>
+			<Run id="hello-world">
+				<echo>Hello world!</echo>
+			</Run>
+		</MyAppRoot>
+	</Data>
+
+	<!-- Provide a common run-time header set of executions -->
+	<Run id="CommonHeader">
+		<echo id="CommonHeader">X2Shell - Sample Configuration</echo>
+		<echo id="CommonHeader">==============================</echo>
+		<echo id="CommonHeader">
+			<string>[</string><string no-preceding-whitespace="true" type="xpath">/X2Shell/run-time/system/@machine-name</string><string no-preceding-whitespace="true">] -</string>
+			<string type="xpath">/X2Shell/run-time/system/@os-version</string>
+			<string>-</string><string type="xpath">/X2Shell/run-time/system/@processor-count</string><string>processor(s)</string>
+		</echo>
+		<echo id="CommonHeader">
+			<string>Run Time: </string><string type="xpath">/X2Shell/run-time/@systemtime</string>			
+		</echo>
+		<echo id="CommonHeader">------------------------------</echo>
+	</Run>
+
+	<!-- The following Run block has no test attribute, therefore it will be run every time. -->
+	<Run id="Check4Updates">
+		<pause id="Check4Updates">
+     			<params method="msgbox" text="Would you like to check for an updated version of this application?" caption="Check for Updates?" buttons="yes-no" icon="question"/>
+		</pause>
+		<skip-to test="/X2Shell/pause[@id='Check4Updates']/@dialog-result != 'yes'">
+			<params method="end"/>
+		</skip-to>
+		<load-file id="LOCAL">
+			<params filepath="PAD_FILE.xml" file-type="xml"/>
+		</load-file>
+		<http id="CURRENT_VERSION">
+     			<params method="get" format="xml" uri="http://www.x2a2.com/Content/downloads/PAD/X2Shell/X2Shell_PAD.xml"/>
+		</http>
+		<!-- 
+		Notice: You will see the reference to X2Shell_Helper.xsl repeatedly.  
+			This was done only to keep the sample configuration here compact.
+			You can use any XSL for any transform, and also specify an xpath 
+			within the datacloud to specify a child node only for processing.  
+		-->
+		<transform id="UPDATES">
+			<params filepath="X2Shell_Helper.xsl" />
+		</transform>
+		<run-batch xpath="/X2Shell/transform[@id='UPDATES']/Run"/>
+	</Run>
+	<!-- 
+		This block will be run if there are no additional command-line arguments given (equates to "Show Usage") 
+		It will ask the user if they would like to see either of two USAGE blocks:
+			- first for this config, 
+			- or secondly, for X2Shell itself.
+		It will also offer the user to create a sample (Hello World) application for their own building.
+	-->
+	<Run id="Default" test="count(/X2Shell/run-time/command-line/arguments/arg) = 1">
+		<echo>
+				<line>Welcome to X2Shell.</line>
+				<line>X2Shell is an XML/XSLT programming language that runs as a console application.</line>
+				<line>You can now develop complex Shell (aka "DOS" or ".BAT") jobs using instead a</line>
+				<line>very readable and debuggable language, using XML and optionally XSLT.</line>
+				<line/>
+				<line>This sample config is made simply to illustrate some of X2Shell's capabilities.</line>
+				<line>What you choose to program your X2Shell app to do is up to you.</line>
+				<line/>
+		</echo>
+
+		<pause id="ViewExamples">
+     			<params method="msgbox" text="Would you like to view a list of Examples contained in this sample configuration?" caption="View Examples?" buttons="yes-no" icon="question"/>
+		</pause>
+		<skip-to test="/X2Shell/pause[@id='ViewExamples']/@dialog-result != 'yes'">
+     			<params method="id" value="ViewSource?"/>
+		</skip-to>
+
+		<echo>
+			<line>------------------------------</line>
+			<line>Sample Configuration Usage</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string> (no parameters)</string>
+			<line>- View information about usage for this example as well as X2Shell itself</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/ip</string>
+			<line>- View your current IP address(es)</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/list</string>
+			<line>- View a list of files and directories in a specified filepath</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/msmq</string>
+			<line>- View a list of messages within a Microsoft Message Queue</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/mail</string>
+			<line>- Send an e-mail message to yourself or a friend</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/logon</string>
+			<line>- Change your Windows 7 Logon Screen Background</line>
+			<line>  (Note: Requires Administrator equivalent access to Registry)</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/process</string>
+			<line>- Use Powershell to view active processes</line>
+			<line/>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index = '0']</string><string>/info</string>
+			<line>- View a display-friendly version of X2Shell's PAD and EULA.</line>
+			<line/>
+			<line>Please understand that this is simply an EXAMPLE configuration.</line>
+			<line>This XML configuration was built purely as an attempt to show</line>
+			<line>some of the capabilities of the X2Shell tool, and to allow you</line>
+			<line>to then determine what you can build with it to help you most.</line>
+		</echo>
+
+		<pause id="ViewSource?">
+			<params method="msgbox" text="Would you like to view the source for this sample configuration?" caption="View this sample source?" buttons="yes-no" icon="question"/>
+		</pause>
+		<command test="/X2Shell/pause[@id='ViewSource?']/@dialog-result = 'yes'">
+ 				<params command="Notepad.exe">
+					<arg>&quot;</arg>
+					<arg type="xpath" separator-character="">/X2Shell/run-time/command-line/@cwd</arg>
+					<arg separator-character="\" type="literal">X2Shell.xml&quot;</arg>
+				</params>
+		</command>
+
+		<pause id="ViewUsage">
+     			<params method="msgbox" text="Would you like to view the usage of the base X2Shell application?" caption="View Usage?" buttons="yes-no" icon="question"/>
+		</pause>
+		<skip-to test="/X2Shell/pause[@id='ViewUsage']/@dialog-result != 'yes'">
+     			<params method="id" value="StartNewApp"/>
+		</skip-to>
+		<pause id="ViewUsingNotepad">
+     			<params method="msgbox" text="Would you like to view the usage in Notepad?
+			
+If you choose 'No', it will be displayed via the console." caption="View using Notepad?" buttons="yes-no" icon="question"/>
+		</pause>
+
+		<transform id="USAGE">
+			<params filepath="X2Shell_Helper.xsl" />
+		</transform>
+
+		<run-batch xpath="/X2Shell/transform[@id='USAGE']/Run"/>
+
+		<echo id="StartNewApp">The easiest way to start is to copy X2Shell.exe and X2Shell.xml to your own app.</echo>
+		<pause id="CreateNewApp?">
+     			<params method="msgbox" text="Would you like to create a new X2Shell application?" caption="Create new app?" buttons="yes-no" icon="question"/>
+		</pause>
+		<skip-to test="/X2Shell/pause[@id='CreateNewApp?']/@dialog-result != 'yes'">
+     			<params method="id" value="ViewReference?"/>
+		</skip-to>
+		<echo new-line="false">What would you like your new X2Shell app named? </echo>
+	     	<pause id="AppName">
+	     		<params method="console"/>
+	     	</pause>
+		<transform id="NewApp">
+			<params filepath="X2Shell_Helper.xsl" />
+		</transform>
+		<run-batch xpath="/X2Shell/transform[@id='NewApp']/Run"/>
+
+		<pause id="ViewReference?">
+     			<params method="msgbox" text="Would you like to view the online X2Shell Reference Manual?" caption="Read The Manual?" buttons="yes-no" icon="question"/>
+		</pause>
+		<command test="/X2Shell/pause[@id='ViewReference?']/@dialog-result = 'yes'">
+			<params command="http://www.x2a2.com/?help.x2shell" use-shell="true" wait-for-exit="false" />
+		</command>
+		
+	</Run>
+
+	<!--
+		IP - This will be run if the user called the program with "/ip" as the first command line argument
+		It will list all active IP addresses as determined from the captured output of IPCONFIG.exe
+	-->
+	<Run id="/ip" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/ip'">
+		<command id="IPCONFIG">
+			<params command="IPCONFIG.exe" use-shell="false" wait-for-exit="true" capture-stdout="true" />
+		</command>
+		<transform id="IPCONFIG">
+			<params filepath="X2Shell_Helper.xsl" rootnode-xpath="/"/>
+		</transform>
+		<echo>TCP/IP ADDRESSES (IPCONFIG):</echo>
+		<echo/>
+	</Run>
+	<Run for-each="/X2Shell/transform[@id='IPCONFIG']/IPCONFIG/adapter" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/ip'">
+		<echo>
+			<string type="xpath">@name</string>
+			<string>: </string>
+			<string type="xpath">@address</string>
+		</echo>
+	</Run>
+
+	
+
+	<!--
+		LIST - This will be run if the user called the program with "/list" as the first command line argument
+		It will list all files and directories of a path, that is requested from the user during run-time.
+	-->
+	<Run id="/list" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/list'">
+		<echo new-line="false">Please enter a filepath to list: </echo>
+	     	<pause id="FilePath">
+	     		<params method="console"/>
+	     	</pause>
+		<transform id="LIST">
+			<params filepath="X2Shell_Helper.xsl" rootnode-xpath="/"/>
+		</transform>
+		<path id="LIST" xpath="/X2Shell/transform[@id='LIST']/LIST/path"/>
+	</Run>
+	<Run for-each="/X2Shell/path[@id='LIST']/dir" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/list'">
+		<echo>
+			<string>[DIR] </string>
+			<string type="xpath">.</string>
+		</echo>
+	</Run>
+	<Run for-each="/X2Shell/path[@id='LIST']/file" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/list'">
+		<echo>
+			<string type="xpath">.</string>
+		</echo>
+	</Run>
+
+
+	<!--
+		MSMQ - This will be run if the user called the program with "/msmq" as the first command line argument
+		It will list any messages within a specified Microsoft Message Queue and prompt to save them to file.
+	-->
+	<Run id="/msmq" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/msmq'">
+		<echo new-line="false">Please enter the path for the MSMQ: </echo>
+	     	<pause id="QueueName">
+	     		<params method="console"/>
+	     	</pause>
+		<transform id="MSMQ">
+			<params filepath="X2Shell_Helper.xsl" rootnode-xpath="/"/>
+		</transform>
+		<msmq xpath="/X2Shell/transform[@id='MSMQ']/msmq"/>
+		<transform id="MSMQ_Details">
+			<params filepath="X2Shell_Helper.xsl" rootnode-xpath="/"/>
+		</transform>
+		<run-batch xpath="/X2Shell/transform[@id='MSMQ_Details']/Run"/>
+	</Run>
+
+
+	<!--
+		MAIL - This will be run if the user called the program with "/mail" as the first command line argument
+		It will send an e-mail message to given recipent(s) with sample information
+	-->
+	<Run id="/mail" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/mail'">
+		<echo new-line="false">Please enter your e-mail address: </echo>
+	     	<pause id="FromAddr">
+	     		<params method="console"/>
+	     	</pause>
+		<echo new-line="false">Please enter a recipient e-mail address: </echo>
+	     	<pause id="ToAddr">
+	     		<params method="console"/>
+	     	</pause>
+		<echo new-line="false">Please enter a valid e-mail server: </echo>
+	     	<pause id="Server">
+	     		<params method="console"/>
+	     	</pause>
+		<pause id="UseAuthentication?">
+     			<params method="msgbox" text="Does your mail server require network authentication (i.e. Microsoft Exchange)?" caption="Use Authentication?" buttons="yes-no" icon="question"/>
+		</pause>		
+		<transform id="MAIL">
+			<params filepath="X2Shell_Helper.xsl" rootnode-xpath="/"/>
+		</transform>
+		<mail-to xpath="/X2Shell/transform[@id='MAIL']/MAIL"/>
+	</Run>
+
+
+	<!--
+		LOGON - This will be run if the user called the program with "/logon" as the first command line argument
+		It will turn on custom logon screen backgrounds and copy a user's choice of new background image.
+	-->
+	<Run id="/logon" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/logon'">
+		<pause id="SetLogonUI">
+			<params method="msgbox" buttons="yes-no" caption="Set Custom Logon Screen" text="This will update your Registry to allow custom Logon Screens and allow you to choose a new image to use for Windows Logon.
+NOTE: You may be required to run this program as an administrator or with elevated priveledges in order to update the registry and the logon background directory.
+
+Would you like to continue?"/>
+		</pause>
+		<skip-to test="/X2Shell/pause[@id='SetLogonUI']/@dialog-result != 'yes'">
+			<params method="end"/>
+		</skip-to>
+		<registry>
+			<params method="set-value" hkey="HKLM" subkey="Software\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background" value-name="OEMBackground" value-type="REG_DWORD" value-data="1"/>
+		</registry>
+		<pause id="new-background">
+			<params method="file-dialog"/>
+		</pause>
+		<stop-if test="/X2Shell/pause[@id='new-background']/@dialog-result != 'ok'"/>
+		<pause test="/X2Shell/registry != 'Value Set'">
+			<params method="msgbox" caption="Need Registry Edit Permissions" text="You do not appear to have rights to write to this portion of the registry.
+Please run this program as an administrator or someone with elevated priveledges."/>
+		</pause>
+		<command>
+			<params command="CMD.exe">
+				<arg>/C</arg>
+				<arg>COPY</arg>
+				<arg>&quot;</arg>
+				<arg no-preceding-whitespace="true" type="xpath">/X2Shell/pause/@dialog-filename</arg>
+				<arg no-preceding-whitespace="true">&quot; &quot;</arg>
+				<arg no-preceding-whitespace="true" type="xpath">/X2Shell/run-time/environment/env-var[@name='SystemRoot']</arg>
+				<arg no-preceding-whitespace="true">\System32\oobe\info\backgrounds\backgroundDefault.jpg&quot;</arg>
+			</params>
+		</command>
+		<pause test="/X2Shell/registry = 'Value Set'">
+			<params method="msgbox" caption="Update Complete" text="You have successfully updated your Windows Logon screen.
+Press [Windows Key] + 'L' to test.
+
+NOTE: If you still see the default background, then the file that you chose may have been too large or an unsupported file type.  Please choose JPG images that are 256K or smaller."/>
+		</pause>
+	</Run>
+
+
+	<!--
+		PROCESS - This will be run if the user called the program with "/process" as the first command line argument
+		It will list attempt to use Powershell to view the active processes
+	-->
+	<Run id="/process" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/process'">
+		<powershell>
+			<params>
+				<script>get-process</script>
+			</params>
+		</powershell>
+	</Run>
+
+
+	<!--
+		INFO - This will be run if the user called the program with "/info" as the first command line argument
+		It will list load the attached PAD_FILE.xml and provide a display-friendly view of information about this program.
+	-->
+	<Run id="/info" test="/X2Shell/run-time/command-line/arguments/arg[@index = '1'] = '/info'">
+		<load-file id="INFO">
+			<params filepath="PAD_FILE.xml" file-type="xml"/>
+		</load-file>
+		<transform id="INFO">
+			<params filepath="X2Shell_Helper.xsl" />
+		</transform>
+		<echo>
+			<string type="xpath">/X2Shell/transform[@id='INFO']/PAD/Text/text()</string>
+		</echo>
+		<pause id="EULA?">
+			<params method="msgbox" text="Would you like to view the licence agreement?" caption="View EULA?" buttons="yes-no" icon="question"/>
+		</pause>
+		<echo test="/X2Shell/pause[@id='EULA?']/@dialog-result = 'yes'">
+			<string type="xpath">/X2Shell/transform[@id='INFO']/PAD/EULA/text()</string>
+		</echo>
+	</Run>
+
+
+	<!--
+		ViewDataCloud?
+		As understanding the DataCloud is extremely important for X2A2 programming, this common block has been added to always
+		allow the user to view the generated DataCloud for this batch run, regardless of what actions were performed above.
+	-->
+	<Run id="ViewDataCloud?">
+		<pause id="ViewDataCloud">
+     		<params method="msgbox" text="Would you like to view the final datacloud for this run?" caption="View Datacloud?" buttons="yes-no" icon="question"/>
+		</pause>
+
+		<skip-to test="/X2Shell/pause[@id='ViewDataCloud']/@dialog-result != 'yes'">
+			<params method="end"/>
+		</skip-to>
+
+		<transform id="DataCloud">
+			<params filepath="X2Shell_Helper.xsl" />
+		</transform>
+
+	     	<dump-log xpath="/X2Shell/transform[@id='DataCloud']/DataCloud/dump-log"/>
+	     	<command xpath="/X2Shell/transform[@id='DataCloud']/DataCloud/command"/>
+	</Run>
+
+
+	<!-- Provide a common run-time footer set of executions -->
+	<Run id="CommonFooter">
+		<echo>==============================</echo>	
+		<echo><string type="xpath">/X2Shell/@powered-by</string></echo>	
+		<echo>------------------------------</echo>	
+		<echo><string type="xpath">/X2Shell/@legal-notice</string></echo>	
+	</Run>
+
+	<!--
+		TryAgain?
+		At the end of every run, the user will be offered to start the process over again, utilizing the "reset" with a "restart" method.
+	-->
+	<Run id="Exit-or-Restart">
+		<pause id="RunAgain?">
+			<params method="msgbox" text="Would you like to do this again?" caption="One more time!" buttons="yes-no" icon="question"/>
+		</pause>
+		<reset test="/X2Shell/pause[@id='RunAgain?']/@dialog-result = 'yes'">
+			<params method="restart"/>
+		</reset>
+	</Run>
+
+</Sample>

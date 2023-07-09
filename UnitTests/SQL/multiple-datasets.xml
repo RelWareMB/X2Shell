@@ -1,0 +1,11 @@
+<UnitTest>
+	<Run>
+		<sql id="multiple-datasets">
+			<params server=".\SQLEXPRESS" connect="Data source=.\SQLEXPRESS;Integrated Security=SSPI;Initial Catalog=master" 
+							query="SELECT 'Happy' as '@pants' FOR XML PATH('Test1'); SELECT 'Slappy' as '@pants' FOR XML PATH('Test2'); SELECT 'Crappy' as '@pants' FOR XML PATH('Test3'); SELECT 'Nappy' as '@pants' FOR XML PATH('Test4'); SELECT 'Pappy' as '@pants' FOR XML PATH('Test5');" 
+							method="xml" row-label="Test">
+			</params>
+		</sql>
+		<dump-log/>
+	</Run>
+</UnitTest>

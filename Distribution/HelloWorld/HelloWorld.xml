@@ -1,0 +1,23 @@
+<Config>
+	
+	<Run>
+		
+		<echo>Hello World!</echo>
+
+		<pause>
+			<params method="msgbox" caption="View Data Cloud?" text="Would you lke to view the data cloud?" buttons="ok-cancel"/>
+		</pause>
+		
+		<dump-log test="/X2Shell/pause/@dialog-result='ok'" />
+		
+	</Run>
+	
+	<Finally>
+		<echo>
+			<line/>
+			<line/>
+			<line>Have a great day!</line>
+		</echo>
+	</Finally>
+
+</Config>

@@ -1,0 +1,1 @@
+@X2Shell.exe showvars /xml X2Tools.xml

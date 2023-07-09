@@ -1,0 +1,16 @@
+C:\Source\Supporting Components\RelWare\BRANDON\bin\x64\Release\X2Shell.exe.manifest
+C:\Source\Supporting Components\RelWare\BRANDON\bin\x64\Release\X2Shell.application
+C:\Source\Supporting Components\RelWare\BRANDON\bin\x64\Release\X2Shell.exe
+C:\Source\Supporting Components\RelWare\BRANDON\bin\x64\Release\X2Shell.pdb
+C:\Source\Supporting Components\RelWare\BRANDON\obj\x64\Release\ResolveAssemblyReference.cache
+C:\Source\Supporting Components\RelWare\BRANDON\obj\x64\Release\X2Shell.exe.manifest
+C:\Source\Supporting Components\RelWare\BRANDON\obj\x64\Release\X2Shell.application
+C:\Source\Supporting Components\RelWare\BRANDON\obj\x64\Release\X2Shell.exe
+C:\Source\Supporting Components\RelWare\BRANDON\obj\x64\Release\X2Shell.pdb
+F:\Source\RelWare\X2Shell\obj\x64\Release\X2Shell.exe
+F:\Source\RelWare\X2Shell\obj\x64\Release\X2Shell.pdb
+C:\RelWare\X2Shell\bin\x64\Release\X2Shell.exe.config
+C:\RelWare\X2Shell\obj\x64\Release\X2Shell.exe
+C:\RelWare\X2Shell\Distribution\X2Shell.exe.config
+C:\RelWare\X2Shell\obj\x64\Release\BRANDON.csprojResolveAssemblyReference.cache
+C:\RelWare\X2Shell\Distribution\X2Shell.exe

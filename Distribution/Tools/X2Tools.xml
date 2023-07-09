@@ -1,0 +1,121 @@
+<X2Tools>
+
+	<!-- WhereAmI -->
+	<Run test="/X2Shell/run-time/command-line/arguments/arg[@index=1][translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ-','abcdefghijklmnopqrstuvwxyz') = 'whereami']">
+		<echo>
+			<string>You are logged in as </string>
+			<string no-preceding-whitespace="true" type="xpath">/X2Shell/run-time/system/@username</string>
+			<string no-preceding-whitespace="true"> on machine </string>
+			<string no-preceding-whitespace="true" type="xpath">/X2Shell/run-time/system/@machine-name</string>
+		</echo>
+	</Run>	
+
+	<!-- MyIP -->
+	<Run test="/X2Shell/run-time/command-line/arguments/arg[@index=1][translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ-','abcdefghijklmnopqrstuvwxyz') = 'myip']">
+		<command>
+			<params command="IPCONFIG.exe" use-shell="false" wait-for-exit="true" capture-stdout="true" capture-stdout-format="text" capture-stderr="true"/>
+		</command>
+		
+		<echo>
+			<string>This machine's IP address is </string>
+			<string no-preceding-whitespace="true" type="xpath">substring-before( substring-after( substring-after( /X2Shell/command ,'IPv4 Address' ), ':' ), '&#x0D;' )</string>
+		</echo>
+	</Run>	
+
+
+	<!-- ShowVars -->
+	<Run test="/X2Shell/run-time/command-line/arguments/arg[@index=1][translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ-','abcdefghijklmnopqrstuvwxyz') = 'showvars']">
+
+		<echo>Following are the known environment variables:</echo>
+
+		<echo/>
+		
+		<run-batch for-each="/X2Shell/run-time/environment/env-var">
+
+			<echo>
+				<string type="xpath">@name</string>
+				<string no-preceding-whitespace="true" >:&#x09;</string>
+				<string type="xpath">.</string>
+			</echo>
+
+		</run-batch>
+		
+	</Run>	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- THE FOLLOWING EXAMPLES ARE STILL IN DEVELOPMENT - THE UNDERLYING COMMANDS WORK AS EXPECTED, HOWEVER THE SAMPLE CODE HERE DOES NOT -->
+	
+	
+	<!-- Google -->	
+	<Run test="/X2Shell/run-time/command-line/arguments/arg[@index=1][translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ-','abcdefghijklmnopqrstuvwxyz') = 'google']">
+		<echo>
+			<string>Google results for: </string>
+			<string type="xpath">/X2Shell/run-time/command-line/arguments/arg[@index=2]</string>
+		</echo>
+
+		<http id="google">
+			<params mathod="get" uri="concat('https://google.com?q=', /X2Shell/run-time/command-line/arguments/arg[@index=2])" uri_type="xpath"  />
+		</http>
+		<dump-log/>
+	</Run>	
+
+	<!-- Transform -->
+	<Run test="/X2Shell/run-time/command-line/arguments/arg[@index=1][translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ-','abcdefghijklmnopqrstuvwxyz') = 'transform']">
+
+		<transform id="TRANSFORM">
+			<params 
+					
+					source-filepath="/X2Shell/run-time/command-line/arguments/arg[@index = '2']" 
+					source-filepath_type="xpath" 
+					
+					filepath="/X2Shell/run-time/command-line/arguments/arg[@index = '3']" 
+					filepath_type="xpath" 
+			/>
+			
+		</transform>
+		
+		<run-batch test="/X2Shell/transform/Error">
+
+
+			<echo>
+				<line>There was an error transforming the specified files;</line>				
+				<line type="xpath">/X2Shell/transform/Error/text()</line>
+			</echo>
+
+			<stop-if>
+				<params method="all"/>
+			</stop-if>
+			
+		</run-batch>
+		
+		<!-- if output file and result has xml, then save as output as XML -->
+		<save-file test="/X2Shell[transform[@id='TRANSFORM']/*]/run-time/command-line/arguments/arg[@index = '4']">
+			<params rootnode-xpath="/X2Shell/transform[@id='TRANSFORM']" format="text" append-contents="false" file-type="xml" filepath="/X2Shell/run-time/command-line/arguments/arg[@index = '4']" filepath_type="xpath"/>
+		</save-file>
+		
+		<!-- if output file and result does not have xml, then save as output as text -->
+		<save-file test="/X2Shell[not(transform[@id='TRANSFORM']/*)]/run-time/command-line/arguments/arg[@index = '4']">
+			<params rootnode-xpath="/X2Shell/transform[@id='TRANSFORM']/*" format="xml-outer" append-contents="false" file-type="xml" filepath="/X2Shell/run-time/command-line/arguments/arg[@index = '4']" filepath_type="xpath"/>
+		</save-file>
+		
+		<dump-log/>
+
+
+	</Run>	
+	
+
+</X2Tools>

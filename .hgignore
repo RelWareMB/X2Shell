@@ -1,0 +1,9 @@
+.git
+Distribution/X2Shell.exe.config
+Distribution/X2Shell.vshost.exe
+Distribution/X2Shell.vshost.exe.config
+Distribution/X2Shell.vshost.exe.manifest
+bin/
+obj/
+BRANDON.v12.suo
+_UpgradeReport_Files/

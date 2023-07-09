@@ -1,0 +1,1 @@
+@X2Shell.exe transform %* /xml X2Tools.xml

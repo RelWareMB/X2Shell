@@ -1,0 +1,1 @@
+@X2Shell.exe myip /xml X2Tools.xml
